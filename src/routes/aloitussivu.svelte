@@ -1,10 +1,11 @@
 <script>
   import { writable } from "svelte/store";
   import { todoItems } from './stores.js';
+  import { cards } from "./stores.js";
   // import { cards } from "./stores.js"; 
 
     let cardText = "";
-    let cards = []
+    // let cards = []
     let number = 0
     let currentIndex = -1
     // let todoItems = []
@@ -18,28 +19,28 @@
            event.preventDefault();          
            return;
        }
-         cards = [...cards, cardText];
+         $cards = [...$cards, cardText];
          cardText = ""; 
          number += 1
-        console.log(cards)
-        currentIndex = cards.length - 1;
+        // console.log(cards)
+        currentIndex = $cards.length - 1;
     }
   
     function removeCard() {
-      if (currentIndex >= 0 && currentIndex < cards.length) {
-       cards.splice(currentIndex, 1);
-        cards = [...cards]; 
+      if (currentIndex >= 0 && currentIndex < $cards.length) {
+       $cards.splice(currentIndex, 1);
+        $cards = [...$cards]; 
        number -= 1;
 
     
-       if (currentIndex >= cards.length) {
-         currentIndex = cards.length - 1;
+       if (currentIndex >= $cards.length) {
+         currentIndex = $cards.length - 1;
        }
      }
     } 
 
     function nextCard() {
-    if (currentIndex < cards.length - 1) {
+    if (currentIndex < $cards.length - 1) {
       currentIndex++;
     }
     }
@@ -83,10 +84,10 @@
 
 
     function getCardContent() {
-        if (cards.length === 0) {
+        if ($cards.length === 0) {
             return cardText || "Kirjoita jotain ja lisätäksesi ensimmäisen korttisi";
-        } else if (currentIndex >= 0 && currentIndex < cards.length) {
-            return cards[currentIndex];
+        } else if (currentIndex >= 0 && currentIndex < $cards.length) {
+            return $cards[currentIndex];
         } else {
             return "Ei kortteja";
         }
@@ -229,7 +230,7 @@
     background-color: #ffffffcc;
     padding: 1.5rem 2rem;
     border-radius: 12px;
-    max-width: 800px;
+    max-width: 500px;
     height: 660px;
     margin: 0 auto;
     box-shadow: 0 6px 12px rgba(0,0,0,0.1);
@@ -245,7 +246,6 @@
     color: #003366;
     text-align: center;
   }
-
 
 
   input {
@@ -302,13 +302,14 @@
 
   .container {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(610px, 1fr));
+    justify-content: center;
     gap: 2rem;
-    max-width: 1400px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 1rem;
     min-height: 100vh;
-    align-items: start; /* Prevents stretching */
+    align-items: start;
   }
 
   /* #to-do {
@@ -374,34 +375,6 @@
   transition: all 1s cubic-bezier(0.15, 0.83, 0.66, 1);
 }
 
-.button::before {
-  content: "";
-  width: 70%;
-  height: 1px;
-
-  position: absolute;
-  bottom: 0;
-  left: 15%;
-
-  background: rgb(255, 255, 255);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  opacity: 0.2;
-
-  transition: all 1s cubic-bezier(0.15, 0.83, 0.66, 1);
-}
-
-
-
-.button:hover {
-  color: rgb(255, 255, 255, 1);
-  transform: scale(1.1) translateY(-3px);
-}
-
 .button:hover::before {
   opacity: 1;
 }
@@ -436,6 +409,34 @@ background: none;
 }
 
 
+
+.button::before {
+  content: "";
+  width: 70%;
+  height: 1px;
+
+  position: absolute;
+  bottom: 0;
+  left: 15%;
+
+  background: rgb(255, 255, 255);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0.2;
+
+  transition: all 1s cubic-bezier(0.15, 0.83, 0.66, 1);
+}
+
+
+
+.button:hover {
+  color: rgb(255, 255, 255, 1);
+  transform: scale(1.1) translateY(-3px);
+}
 
 
 </style>
