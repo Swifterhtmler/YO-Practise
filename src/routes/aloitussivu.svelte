@@ -1,8 +1,17 @@
 <script>
+  import { writable } from "svelte/store";
+  import { todoItems } from './stores.js';
+  // import { cards } from "./stores.js"; 
+
     let cardText = "";
     let cards = []
     let number = 0
     let currentIndex = -1
+    // let todoItems = []
+    let todoText = ""
+
+
+
 
     function addCard(event) {
         if (cardText.trim() === "") {
@@ -18,37 +27,59 @@
   
     function removeCard() {
       if (currentIndex >= 0 && currentIndex < cards.length) {
-		   cards.splice(currentIndex, 1);
-		   cards = [...cards]; 
-		   number -= 1;
+       cards.splice(currentIndex, 1);
+        cards = [...cards]; 
+       number -= 1;
 
-		
-		   if (currentIndex >= cards.length) {
-			   currentIndex = cards.length - 1;
-		   }
+    
+       if (currentIndex >= cards.length) {
+         currentIndex = cards.length - 1;
+       }
      }
     } 
 
     function nextCard() {
-		if (currentIndex < cards.length - 1) {
-			currentIndex++;
-		}
+    if (currentIndex < cards.length - 1) {
+      currentIndex++;
+    }
     }
 
     function prevCard() {
-		if (currentIndex > 0) {
-			currentIndex--;
-		}
-	}
+    if (currentIndex > 0) {
+      currentIndex--;
+    }
+  }
 
 
-	function handleKeydown(event) {
-		if (event.key === "ArrowRight") {
-			nextCard();
-		} else if (event.key === "ArrowLeft") {
-			prevCard();
-		}
-	}
+  function markDoneTask() {
+     removeItem();
+  }
+
+  function handleKeyDownList(event) {
+      if (event.key === "Enter") {
+        AddItem();
+      }
+  }
+
+  function handleKeydown(event) {
+    if (event.key === "ArrowRight") {
+      nextCard();
+    } else if (event.key === "ArrowLeft") {
+      prevCard();
+    }
+  }
+
+
+  function AddItem() {
+    //  todoItems.push(todoText)
+     $todoItems = [...$todoItems, todoText];
+     todoText = ""
+  }
+
+  function removeItem() {
+    $todoItems.pop()
+    $todoItems = [...$todoItems]
+  }
 
 
     function getCardContent() {
@@ -141,13 +172,56 @@
 <div id="to-do">
 <section class="content-block">
 <h2>Tehtävä Lista</h2>
+{#if $todoItems.length == 0}
+<div class="results">
+<div class="live-preview-hint">(Lisää tehtäviä listalle esim. luettavat luvut) </div>
+</div>
+{:else}
+<div class="results">
+<ul>
+  {#each $todoItems as item}     
+     <li><button class="element" type="button" on:click={markDoneTask}>{item}</button></li>
+  {/each}
+</ul>
+</div>
+{/if}
 
+  <br>
+{#if $todoItems.length >= 10}
+    <input 
+      bind:value={todoText} 
+      type="text" 
+      placeholder="kirjoita jotain lisäteksesi tehtävän"
+      on:keypress={handleKeyDownList}
+      disabled
+    >
+{:else}
+ <input 
+      bind:value={todoText} 
+      type="text" 
+      placeholder="kirjoita jotain lisäteksesi tehtävän"
+      on:keypress={handleKeyDownList}
+    >
+ {/if}
 
+ <br>
 
-
+<div class="rowButtons">
+{#if $todoItems.length >= 10 || todoText.length >= 50}
+<button class="taskButton" disabled on:click={AddItem}>Lyhennä tekstiä</button>  
+{:else}
+<button class="taskButton" on:click={AddItem}>Lisää tehtävä</button>  
+{/if}
+<br>
+<button on:click={removeItem}>Poista tehtävä</button>
+</div>
+ 
+ 
 
 </section>
 </div>
+
+
 </div>
 
 <style>
@@ -155,13 +229,14 @@
     background-color: #ffffffcc;
     padding: 1.5rem 2rem;
     border-radius: 12px;
-    width: 800px;
-    max-width: 100%;
+    max-width: 800px;
+    height: 660px;
     margin: 0 auto;
     box-shadow: 0 6px 12px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 20px;
   }
 
   h2 {
@@ -225,19 +300,22 @@
     text-align: center;
   }
 
-  /* .container {
-    /* width: 100%;
+  .container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, 300px);
-    gap: 20px;
-    justify-content: center; */
-    /* margin-top: 20px; 
-  } */
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem;
+    min-height: 100vh;
+    align-items: start; /* Prevents stretching */
+  }
 
-  #to-do {
+  /* #to-do {
     margin-top: 20px;
     width: 100%;
-  }
+    
+  } */
 
 
   button {
@@ -263,6 +341,16 @@
   /* #add {
     background-color: #1873d4;
   } */
+
+
+
+
+  .rowButtons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
 
   .button {
   min-width: 120px;
@@ -307,6 +395,8 @@
   transition: all 1s cubic-bezier(0.15, 0.83, 0.66, 1);
 }
 
+
+
 .button:hover {
   color: rgb(255, 255, 255, 1);
   transform: scale(1.1) translateY(-3px);
@@ -320,4 +410,32 @@
   #add:hover:not(:disabled) {
     background-color: #45a049;
   }
+
+.results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 350px;
+  width: 65%;
+  border: rgb(0, 0, 0) 1px solid;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px;
+  box-shadow: 2px 1px 2px rgb(123, 121, 121);
+}
+
+.element {
+background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
+
+
+
 </style>
