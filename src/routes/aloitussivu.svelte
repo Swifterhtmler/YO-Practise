@@ -1,8 +1,10 @@
 <script>
   import { writable } from "svelte/store";
   import { todoItems } from './stores.js';
-  import { cards } from "./stores.js";
   // import { cards } from "./stores.js"; 
+
+  
+  import { cards } from "./stores.js";
 
     let cardText = "";
     // let cards = []
@@ -83,18 +85,30 @@
   }
 
 
+    // function getCardContent() {
+    //     if (cards.length === 0) {
+    //         return cardText || "Kirjoita jotain ja lisätäksesi ensimmäisen korttisi";
+    //     } else if (currentIndex >= 0 && currentIndex < cards.length) {
+    //         return cards[currentIndex];
+    //     } else {
+    //         return "Ei kortteja";
+    //     }
+    // }
+
     function getCardContent() {
-        if ($cards.length === 0) {
-            return cardText || "Kirjoita jotain ja lisätäksesi ensimmäisen korttisi";
-        } else if (currentIndex >= 0 && currentIndex < $cards.length) {
-            return $cards[currentIndex];
-        } else {
-            return "Ei kortteja";
-        }
+    if ($cards.length === 0) {
+        return cardText || "Kirjoita jotain ja lisätäksesi ensimmäisen korttisi";
+    } else if (currentIndex >= 0 && currentIndex < $cards.length) {
+        return cardText || $cards[currentIndex];
+    } else {
+        return "Ei kortteja";
     }
+   }
+
     function handleKeypress(event) {
         if (event.key === "Enter") {
             addCard(event);
+            cardText = "";
         }
     }
 </script>
@@ -110,7 +124,7 @@
     <div id="card-Block">  
       <div class="card">
         {getCardContent()}
-        {#if cards.length === 0 && cardText}
+        {#if $cards.length === 0 && cardText}
           <div class="live-preview-hint">(Paina Enter tai klikkaa Lisää kortti)</div>
         {/if}
       </div>
@@ -152,7 +166,7 @@
           &larr; Edellinen
         </button>
         <button 
-          disabled={currentIndex >= cards.length - 1} 
+          disabled={currentIndex >= $cards.length - 1} 
           on:click={nextCard}
         >
           Seuraava &rarr;
@@ -172,7 +186,7 @@
 
 <div id="to-do">
 <section class="content-block">
-<h2>Tehtävä Lista</h2>
+<h2>Tehtävälista</h2>
 {#if $todoItems.length == 0}
 <div class="results">
 <div class="live-preview-hint">(Lisää tehtäviä listalle esim. luettavat luvut) </div>
