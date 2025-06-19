@@ -3,10 +3,8 @@
   import { todoItems } from './stores.js';
   // import { cards } from "./stores.js"; 
   // import { cards } from "./stores.js";
-
-
-
   import Flashcards from "./flashcards.svelte";
+	import Matematiikka from "./matematiikka.svelte";
 
 
 
@@ -93,11 +91,12 @@
 <button on:click={removeItem}>Poista tehtävä</button>
 </div>
  
- 
+
 
 </section>
 </div>
 
+<Matematiikka />
 
 </div>
 
@@ -144,7 +143,7 @@
 
   .container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(610px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
     justify-content: center;
     /* gap: 2rem; */
     max-width: 95%;
@@ -152,6 +151,7 @@
     padding: 1rem;
     min-height: 100vh;
     align-items: start;
+    margin-left: 50px;
   }
 
   /* #to-do {
