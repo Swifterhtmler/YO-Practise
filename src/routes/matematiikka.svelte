@@ -26,7 +26,7 @@
 
 <style>
   /* Outer wrapper size */
-  .editor-wrapper {
+  /* .editor-wrapper {
     width: 500px;
     height: 630px;
     border: 1px solid #ccc;
@@ -35,7 +35,21 @@
     border-radius: 10px;
     margin-top: 20px;
     margin-left: 30px;
+  } */
+
+  .editor-wrapper {
+    width: 100%; 
+    max-width: 500px; 
+    height: 630px;
+    border: 1px solid #ccc;
+    overflow: hidden;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 20px auto 0; 
+    background-color: #ffffffcc;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
   }
+
 
   /* Ensure Tipex root fills wrapper */
   .custom-tipex {
