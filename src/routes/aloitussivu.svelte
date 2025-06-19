@@ -5,6 +5,7 @@
   // import { cards } from "./stores.js";
   import Flashcards from "./flashcards.svelte";
 	import Matematiikka from "./matematiikka.svelte";
+  import { cards } from "./stores.js";
 
 
 
@@ -37,8 +38,11 @@
 
 </script>
 
+<div>
+  <h1>Korttien määrä tällä hetkellä: {$cards.length}</h1>
+</div>
 
-
+<div class="stat-container">
 <div class="container">  
  
 <Flashcards />
@@ -98,6 +102,7 @@
 
 <Matematiikka />
 
+</div>
 </div>
 
 <style>
@@ -194,6 +199,9 @@
     align-items: center;
   }
 
+  .stat-container {
+    margin-top: 100px;
+  }
 
 
 .results {
