@@ -39,7 +39,7 @@
 </script>
 
 <div>
-  <h1>Korttien määrä tällä hetkellä: {$cards.length}</h1>
+  <h1 class="count">Korttien määrä tällä hetkellä: {$cards.length}</h1>
 </div>
 
 <div class="stat-container">
@@ -106,6 +106,7 @@
 </div>
 
 <style>
+  
   .content-block {
     background-color: #ffffffcc;
     padding: 1.5rem 2rem;
@@ -164,6 +165,11 @@
     width: 100%;
     
   } */
+
+  .count {
+    color: #03111e !important;
+    margin: 20px !important;
+   }
 
 
   button {
