@@ -7,6 +7,12 @@
 	import Matematiikka from "./matematiikka.svelte";
   import { cards } from "./stores.js";
 
+  import Arcchart from "./arcchart.svelte";
+
+  import Arcchartto from "./arcchartto.svelte";
+
+  import { Chart, Svg, Axis, Bars } from 'layerchart';
+
 
 
   let todoText = "";
@@ -38,13 +44,23 @@
 
 </script>
 
-<div>
-  <h1 class="count">Korttien määrä tällä hetkellä: {$cards.length}</h1> 
+<div id="charts-container">
+
+<Arcchart usecase={"Muistikortit"} />
+
+
+
+<Arcchartto usecase={"Tehtävien määrä"} />
+
 </div>
+
+
+
+
 
 <!--Now add the library LayerChart tailwdin installed "!important for over ridind styles."-->
 
-<div class="stat-container">
+<div class="usecase-container">
 <div class="container">  
  
 <Flashcards />
@@ -168,10 +184,6 @@
     
   } */
 
-  .count {
-    color: #03111e !important;
-    margin: 20px !important;
-   }
 
 
   button {
@@ -207,8 +219,20 @@
     align-items: center;
   }
 
-  .stat-container {
-    margin-top: 100px;
+
+  #charts-container {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+  }
+
+
+
+  .usecase-container {
+    margin-top: 30px;
   }
 
 
