@@ -3,7 +3,7 @@
   import { todoItems } from './stores';
 
  $: value = $todoItems.length;
-  let domain = [0,100]
+  let domain = [0,10]
 
  export let usecase = "Määrä" 
 

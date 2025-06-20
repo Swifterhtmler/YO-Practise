@@ -7,9 +7,16 @@
 	import Matematiikka from "./matematiikka.svelte";
   import { cards } from "./stores.js";
 
+
+  import Fysiikka from "./fysiikka.svelte";
+
   import Arcchart from "./arcchart.svelte";
 
   import Arcchartto from "./arcchartto.svelte";
+
+
+
+
 
   import { Chart, Svg, Axis, Bars } from 'layerchart';
 
@@ -51,6 +58,10 @@
 
 
 <Arcchartto usecase={"Tehtävien määrä"} />
+
+
+<Fysiikka />
+
 
 </div>
 
