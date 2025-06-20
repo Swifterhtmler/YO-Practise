@@ -39,8 +39,10 @@
 </script>
 
 <div>
-  <h1 class="count">Korttien määrä tällä hetkellä: {$cards.length}</h1>
+  <h1 class="count">Korttien määrä tällä hetkellä: {$cards.length}</h1> 
 </div>
+
+<!--Now add the library LayerChart tailwdin installed "!important for over ridind styles."-->
 
 <div class="stat-container">
 <div class="container">  
