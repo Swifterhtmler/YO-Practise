@@ -6,6 +6,9 @@
   import Flashcards from "./flashcards.svelte";
 	import Matematiikka from "./matematiikka.svelte";
   import { cards } from "./stores.js";
+  import Linechart from "./linechart.svelte";
+
+  import Editor from "./editor.svelte";
 
 
   import Fysiikka from "./fysiikka.svelte";
@@ -60,7 +63,7 @@
 <Arcchartto usecase={"Tehtävien määrä"} />
 
 
-<Fysiikka />
+<Linechart />
 
 
 </div>
@@ -129,7 +132,7 @@
 </section>
 </div>
 
-<Matematiikka />
+<Editor />
 
 </div>
 </div>
