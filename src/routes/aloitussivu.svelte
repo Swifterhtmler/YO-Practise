@@ -19,6 +19,7 @@
 
   import { Chart, Svg, Axis, Bars } from 'layerchart';
 
+  import { editorTextStore } from "./stores.js";
 
   let editorDiv;
 
@@ -26,22 +27,23 @@
 
   let todoText = "";
 
-   onMount(() => {
+   
+  onMount(() => {
 		editorDiv = document.querySelector('.tiptap.ProseMirror');
 
-		// if (editorDiv) {
-		// 	console.log("Initial content:", editorDiv.textContent);
-		// 	editorDivStore.set(editorDiv);
-		// }
+		if (!editorDiv) return;
 
-    if (!editorDiv) return;
-		// Listen for changes and log content live
+		// Store the reference once
+		editorDivStore.set(editorDiv);
+
+		// Update text store live
+		editorTextStore.set(editorDiv.textContent); // initial content
+
 		editorDiv.addEventListener('input', () => {
-			console.log("Live content:", editorDiv.textContent); // live content
+			editorTextStore.set(editorDiv.textContent); // live update
+			console.log("Live content:", editorDiv.textContent);
 		});
-
 	});
-
 
 
   function markDoneTask() {

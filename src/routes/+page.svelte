@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Fysiikka from "./fysiikka.svelte";
   import Kemia from "./kemia.svelte"
   import Aidinkieli from "./aidinkieli.svelte"
   import Matematiikka from "./matematiikka.svelte";
@@ -103,7 +102,6 @@
 <!-- <label for="ainevalinta">Valitse oppiaine:</label> -->
 <select bind:value={ainevalinta}>
   <option value="Aloitussivu">Aloitussivu</option>
-  <option value="Fysiikka">Fysiikka</option>
   <option value="Kemia">Kemia</option>
   <option value="Matematiikka">Matematiikka</option>
   <option value="Englanti">Englanti</option>
@@ -116,9 +114,7 @@
 
 <main>
    {#key ainevalinta}
-  {#if ainevalinta === "Fysiikka"}
-    <Fysiikka />
-  {:else if ainevalinta === "Kemia"}
+  {#if ainevalinta === "Kemia"}
     <Kemia />
   {:else if ainevalinta === "Matematiikka"}
     <Matematiikka />
