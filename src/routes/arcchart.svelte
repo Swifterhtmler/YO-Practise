@@ -3,7 +3,7 @@
   import { cards } from './stores'; 
 
   $: value = $cards.length;
-  let domain = [0,100]
+  let domain = [0,500]
 
  export let usecase = "Muistikorttien määrä" 
 

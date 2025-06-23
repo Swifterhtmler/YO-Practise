@@ -13,6 +13,7 @@
   import Arcchartto from "./arcchartto.svelte";
 
 
+
   import { onMount } from 'svelte';
 
   import { editorDivStore } from './stores.js';
@@ -20,6 +21,8 @@
   import { Chart, Svg, Axis, Bars } from 'layerchart';
 
   import { editorTextStore } from "./stores.js";
+
+  import SvelteCalenderDisplay from "./svelteCalenderDisplay.svelte";
 
   let editorDiv;
 
@@ -81,6 +84,9 @@
 
 
 <Linechart />
+
+
+<!-- <SvelteCalenderDisplay /> -->
 
 
 </div>

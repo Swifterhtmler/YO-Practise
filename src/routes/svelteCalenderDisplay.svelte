@@ -1,18 +1,6 @@
-<script>
-
-	import { editorTextStore } from './stores.js';
-
-   let currentText = "";
-
-	// $: currentText;
-	// editorTextStore.subscribe(value => {
-	// 	currentText = value;
-	// });
-
-
-   $: currentText = $editorTextStore;
-
-import { Datepicker } from 'svelte-calendar';
+<script>  
+  
+  import { Datepicker } from 'svelte-calendar';
 	import 'dayjs/locale/zh-cn.js';
 	import 'dayjs/locale/es.js';
 	import 'dayjs/locale/ar-dz.js';
@@ -21,7 +9,6 @@ import { Datepicker } from 'svelte-calendar';
    import 'dayjs/locale/fi.js';
 	import { InlineCalendar, Swappable, themes } from 'svelte-calendar';
 	import { onDestroy } from 'svelte';
-	import SvelteCalenderDisplay from './svelteCalenderDisplay.svelte';
 
 
 	let locale = 'fi';
@@ -68,9 +55,21 @@ const theme = {
 <!-- 
 <InlineCalendar {format} {theme} /> -->
 
+<div class="calender-block">
+<Datepicker {format} {theme} />
+</div>
 
+<style>
+  .calender-block {
+    background-color: #f8f8f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100px;
+    width: 350px;
+    margin: 20px auto;
+    border-radius: 10px;
 
-<SvelteCalenderDisplay />
-
-
-<p>the current text is: {currentText}</p>
+  }
+</style>
