@@ -7,25 +7,41 @@
 	import Matematiikka from "./matematiikka.svelte";
   import { cards } from "./stores.js";
   import Linechart from "./linechart.svelte";
-
   import Editor from "./editor.svelte";
-
-
   import Fysiikka from "./fysiikka.svelte";
-
   import Arcchart from "./arcchart.svelte";
-
   import Arcchartto from "./arcchartto.svelte";
 
 
+  import { onMount } from 'svelte';
 
-
+  import { editorDivStore } from './stores.js';
 
   import { Chart, Svg, Axis, Bars } from 'layerchart';
 
 
+  let editorDiv;
+
+
 
   let todoText = "";
+
+   onMount(() => {
+		editorDiv = document.querySelector('.tiptap.ProseMirror');
+
+		// if (editorDiv) {
+		// 	console.log("Initial content:", editorDiv.textContent);
+		// 	editorDivStore.set(editorDiv);
+		// }
+
+    if (!editorDiv) return;
+		// Listen for changes and log content live
+		editorDiv.addEventListener('input', () => {
+			console.log("Live content:", editorDiv.textContent); // live content
+		});
+
+	});
+
 
 
   function markDoneTask() {
@@ -41,7 +57,6 @@
 
 
   function AddItem() {
-    //  todoItems.push(todoText)
      $todoItems = [...$todoItems, todoText];
      todoText = ""
   }
@@ -238,17 +253,24 @@
     margin-top: 25px;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 40px;
+    background-color: #e5ecf0;
+    padding: 26px;
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
   }
-
-
 
   .usecase-container {
     margin-top: 30px;
+    background-color: #e5ecf0;
+    border-radius: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
   }
-
 
 .results {
   display: flex;
