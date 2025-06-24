@@ -10,9 +10,14 @@
   import "./style.css";
 
   import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+  
+  import { onMount } from 'svelte';
 
+  import { initializeStores } from './stores.js';
 
+  onMount(() => {
+    initializeStores();
+  });
 
 	interface Props {
 		data?: any;
@@ -91,6 +96,8 @@
 	<!-- Page-specific Twitter tags -->
 	<meta name="twitter:title" content={seoTitle} />
 	<meta name="twitter:description" content={seoDescription} />
+	<!-- <meta http-equiv="content-security-policy" content="script-src 'self'; object-src 'self'" /> -->
+
 </svelte:head>
 
 

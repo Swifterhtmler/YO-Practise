@@ -2,12 +2,16 @@
   import { writable } from "svelte/store";
   import { cards } from "./stores.js";
 
+
   let cardText = "";
   let cardTextBack = "";
   let currentIndex = -1;
   let isFlipped = false;
   let isEditing = false;
   let showNavigation = false; // New state to control navigation visibility
+
+
+  export let useCaseCards = "Yleiset muistikortit";
 
   $: number = $cards.length;
 
@@ -174,7 +178,7 @@
 <div class="container">
   <section class="content-block">
 
-    <h2>Yleiset muistikortit</h2>
+    <h2>{useCaseCards}</h2>
     <br>
 
     <div id="card-Block" role="region">

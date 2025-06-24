@@ -86,6 +86,7 @@
 <Linechart />
 
 
+
 <!-- <SvelteCalenderDisplay /> -->
 
 
@@ -100,7 +101,7 @@
 <div class="usecase-container">
 <div class="container">  
  
-<Flashcards />
+<Flashcards UseCaseCards={"Yleiset muistikortit"} />
 
 
 <div id="to-do">
