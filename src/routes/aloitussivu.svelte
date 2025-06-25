@@ -14,6 +14,8 @@
 
 
 
+
+
   import { onMount } from 'svelte';
 
   import { editorDivStore } from './stores.js';
@@ -23,6 +25,12 @@
   import { editorTextStore } from "./stores.js";
 
   import SvelteCalenderDisplay from "./svelteCalenderDisplay.svelte";
+
+
+
+
+  import SimpleEditor from "./simpleEditor.svelte";
+
 
   let editorDiv;
 
@@ -72,6 +80,7 @@
   }
 
 
+
 </script>
 
 <div id="charts-container">
@@ -88,7 +97,6 @@
 
 
 <!-- <SvelteCalenderDisplay /> -->
-
 
 </div>
 
@@ -157,6 +165,9 @@
 </div>
 
 <Editor />
+
+
+
 
 </div>
 </div>

@@ -2,34 +2,77 @@
   import { Tipex, defaultExtensions } from '@friendofsvelte/tipex';
   import Mathematics from '@aarkue/tiptap-math-extension'; 
   import TextStyle from '@tiptap/extension-text-style';
-  import Color from '@tiptap/extension-color'; // Add this line
+  import Color from '@tiptap/extension-color';
+  import { editorTextStore } from './stores.js';
+  import { onMount } from 'svelte';
   import "@friendofsvelte/tipex/styles/Tipex.css";
   import "@friendofsvelte/tipex/styles/ProseMirror.css";
   import "@friendofsvelte/tipex/styles/Controls.css";
   import "@friendofsvelte/tipex/styles/EditLink.css";
   import "@friendofsvelte/tipex/styles/CodeBlock.css";
-
   import 'katex/dist/katex.min.css';
 
-  let body = `<p></p>`;
- 
- const extensions = [
+  let editorContent = $state('<p></p>');
+  let editorMounted = $state(false);
+  let lastSavedContent = '';
+
+  const extensions = [
     ...defaultExtensions,
     Mathematics,
-    TextStyle, // Required for Color
+    TextStyle,
     Color.configure({
       types: ['textStyle'],
     })
   ];
 
+  // Load content after mount
+  onMount(() => {
+    setTimeout(() => {
+      const storeContent = $editorTextStore;
+      if (storeContent && storeContent !== '<p></p>') {
+        console.log('Loading content into editor:', storeContent);
+        editorContent = storeContent;
+        lastSavedContent = storeContent;
+      }
+      editorMounted = true;
+    }, 100);
+  });
 
+  // Fix the handleUpdate function - use the bound editorContent instead of event
+  let saveTimeout;
+  function handleUpdate() {
+    if (!editorMounted) return;
+    
+    // Use the bound editorContent directly instead of trying to get it from event
+    const newContent = editorContent;
+    
+    // Only save if content actually changed
+    if (newContent && newContent !== lastSavedContent) {
+      console.log('Editor content changed, will save:', newContent?.substring(0, 50));
+      
+      // Clear existing timeout
+      if (saveTimeout) clearTimeout(saveTimeout);
+      
+      // Debounce the save
+      saveTimeout = setTimeout(() => {
+        editorTextStore.set(newContent);
+        lastSavedContent = newContent;
+        console.log('Content saved to store');
+      }, 1000);
+    }
+  }
 
-
+  // Watch for changes in editorContent and trigger save
+  $effect(() => {
+    if (editorMounted && editorContent !== lastSavedContent) {
+      handleUpdate();
+    }
+  });
 </script>
 
 <div class="editor-wrapper">
   <Tipex
-    {body}
+    bind:body={editorContent}
     {extensions}
     controls
     floating
@@ -37,6 +80,8 @@
     class="custom-tipex"
   />
 </div>
+
+
 
 <style>
 :global(.ProseMirror) {

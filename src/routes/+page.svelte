@@ -13,11 +13,6 @@
   
   import { onMount } from 'svelte';
 
-  import { initializeStores } from './stores.js';
-
-  onMount(() => {
-    initializeStores();
-  });
 
 	interface Props {
 		data?: any;
