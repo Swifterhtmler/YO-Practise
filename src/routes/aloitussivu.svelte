@@ -28,10 +28,6 @@
 
 
 
-
-  import SimpleEditor from "./simpleEditor.svelte";
-
-
   let editorDiv;
 
 
@@ -129,6 +125,7 @@
 </div>
 {/if}
 
+
   <br>
 {#if $todoItems.length >= 10}
     <input 
@@ -165,9 +162,6 @@
 </div>
 
 <Editor />
-
-
-
 
 </div>
 </div>
