@@ -1,20 +1,19 @@
-<script>
-  import { writable } from "svelte/store";
-  import { cards } from "./stores.js";
 
+<script>
+  import { cards } from "./stores.js";
+  export let subject = "kemia"; // Pass this from parent, e.g. <Flashcards subject="kemia" />
+
+  // Use derived value for this subject's cards
+  $: subjectCards = $cards[subject] ?? [];
 
   let cardText = "";
   let cardTextBack = "";
   let currentIndex = -1;
   let isFlipped = false;
   let isEditing = false;
-  let showNavigation = false; // New state to control navigation visibility
+  let showNavigation = false;
 
-
-
-  export let useCaseCards = "Yleiset muistikortit";
-
-  $: number = $cards.length;
+  $: number = subjectCards.length;
 
   function changeEditing() {
     isEditing = true;
@@ -25,28 +24,31 @@
   }
 
   function addCard(event) {
-    if (event) {
-      event.preventDefault();
-    }
-    if (cardText.trim() === "" || cardTextBack.trim() === "") {
-      return;
-    }
-    $cards = [...$cards, { front: cardText, back: cardTextBack }];
+    if (event) event.preventDefault();
+    if (cardText.trim() === "" || cardTextBack.trim() === "") return;
+    cards.update(all => {
+      const updated = { ...all };
+      updated[subject] = [...(updated[subject] ?? []), { front: cardText, back: cardTextBack }];
+      return updated;
+    });
     cardText = "";
     cardTextBack = "";
-    currentIndex = $cards.length - 1;
+    currentIndex = subjectCards.length; // will be updated on next tick
     isFlipped = false;
     isEditing = false;
-    showNavigation = false; // Hide navigation after adding
+    showNavigation = false;
   }
 
   function removeCard() {
-    if (currentIndex >= 0 && currentIndex < $cards.length) {
-      $cards.splice(currentIndex, 1);
-      $cards = [...$cards];
-
-      if (currentIndex >= $cards.length) {
-        currentIndex = $cards.length - 1;
+    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
+      cards.update(all => {
+        const updated = { ...all };
+        updated[subject] = updated[subject].slice();
+        updated[subject].splice(currentIndex, 1);
+        return updated;
+      });
+      if (currentIndex >= subjectCards.length - 1) {
+        currentIndex = subjectCards.length - 2;
       }
       isFlipped = false;
       isEditing = false;
@@ -57,7 +59,7 @@
   }
 
   function nextCard() {
-    if (currentIndex < $cards.length - 1) {
+    if (currentIndex < subjectCards.length - 1) {
       currentIndex++;
       isEditing = false;
       isFlipped = false;
@@ -99,27 +101,21 @@
   }
 
   function getCardContent() {
-    // If we're adding a new card (no cards exist or we're in add mode)
-    if ($cards.length === 0 || (currentIndex === -1 && !isEditing)) {
-      return isFlipped ?
-        (cardTextBack || "Lisää teksti kortin takapuolelle") :
-        (cardText || "Kirjoita jotain ja lisätäksesi kortin");
+    if (subjectCards.length === 0 || (currentIndex === -1 && !isEditing)) {
+      return isFlipped
+        ? (cardTextBack || "Lisää teksti kortin takapuolelle")
+        : (cardText || "Kirjoita jotain ja lisätäksesi kortin");
     }
-
-    // If we're editing an existing card
-    if (isEditing && currentIndex >= 0 && currentIndex < $cards.length) {
-      return isFlipped ?
-        (cardTextBack || $cards[currentIndex].back) :
-        (cardText || $cards[currentIndex].front);
+    if (isEditing && currentIndex >= 0 && currentIndex < subjectCards.length) {
+      return isFlipped
+        ? (cardTextBack || subjectCards[currentIndex].back)
+        : (cardText || subjectCards[currentIndex].front);
     }
-
-    // If we're viewing an existing card (normal navigation mode)
-    if (currentIndex >= 0 && currentIndex < $cards.length) {
-      return isFlipped ?
-        $cards[currentIndex].back :
-        $cards[currentIndex].front;
+    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
+      return isFlipped
+        ? subjectCards[currentIndex].back
+        : subjectCards[currentIndex].front;
     }
-
     return "Ei kortteja";
   }
 
@@ -142,19 +138,23 @@
   }
 
   function startEditing() {
-    if (currentIndex >= 0 && currentIndex < $cards.length) {
+    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
       isEditing = true;
-      cardText = $cards[currentIndex].front;
-      cardTextBack = $cards[currentIndex].back;
-      isFlipped = false; 
+      cardText = subjectCards[currentIndex].front;
+      cardTextBack = subjectCards[currentIndex].back;
+      isFlipped = false;
       showNavigation = false;
     }
   }
 
   function updateCard() {
-    if (currentIndex >= 0 && currentIndex < $cards.length) {
-      $cards[currentIndex] = { front: cardText, back: cardTextBack };
-      $cards = [...$cards];
+    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
+      cards.update(all => {
+        const updated = { ...all };
+        updated[subject] = updated[subject].slice();
+        updated[subject][currentIndex] = { front: cardText, back: cardTextBack };
+        return updated;
+      });
       isEditing = false;
       cardText = "";
       cardTextBack = "";
@@ -171,15 +171,14 @@
     cardTextBack = "";
     showNavigation = false;
   }
-  
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window on:keydown={handleKeydown} />
 
 <div class="container">
   <section class="content-block">
 
-    <h2>{useCaseCards}</h2>
+    <h2>{subject}</h2>
     <br>
 
     <div id="card-Block" role="region">
@@ -209,7 +208,6 @@
 
       <br>
 
-      <!-- Show input fields when adding new card or editing -->
       {#if currentIndex === -1 || isEditing}
         <input
           bind:value={cardText}
@@ -230,19 +228,16 @@
         <br>
 
         <div class="input-controls">
-          <!-- Only show Add Card button when not editing -->
           {#if !isEditing}
             <button disabled={cardText.trim() === "" && cardTextBack.trim() === ""} onclick={addCard}>
               Lisää kortti
             </button>
           {:else}
-            <!-- When editing, automatically update on input change -->
             <button onclick={updateCard} disabled={cardText.trim() === "" && cardTextBack.trim() === ""}>
               Päivitä kortti
             </button>
           {/if}
 
-          <!-- Show navigation toggle button when in input mode and there are cards -->
           {#if number > 0}
             <button onclick={toggleNavigation}>
               {showNavigation ? 'Piilota valikko' : 'Näytä valikko'}
@@ -251,7 +246,6 @@
         </div>
       {/if}
 
-      <!-- Show full menu when showNavigation is true OR when not in input mode -->
       {#if showNavigation || (currentIndex >= 0 && !isEditing && !(currentIndex === -1 || isEditing))}
         <div class="card-controls">
           <button onclick={flipCard}>Käännä kortti</button>
@@ -265,49 +259,38 @@
               <button onclick={startAddingNew}>Lisää uusi kortti</button>
             {/if}
 
-
-        {#if number <= 0}
-          <button disabled onclick={removeCard}>Poista kortti</button>
-        {:else if currentIndex >= 0}
-          <button onclick={removeCard}>Poista kortti</button>
-        {/if}
-
+            {#if number <= 0}
+              <button disabled onclick={removeCard}>Poista kortti</button>
+            {:else if currentIndex >= 0}
+              <button onclick={removeCard}>Poista kortti</button>
+            {/if}
           {/if}
         </div>
 
-      
+        <div class="card-controls-version-new">  
+          {#if number > 1}
+            <div style="margin-top: 1rem;">
+              <button
+                disabled={currentIndex <= 0}
+                onclick={prevCard}
+              >
+                &larr; Edellinen
+              </button>
+              <button
+                disabled={currentIndex >= subjectCards.length - 1}
+                onclick={nextCard}
+              >
+                Seuraava &rarr;
+              </button>
+            </div>
 
-
-        <!-- Show navigation buttons -->
-       <div class="card-controls-version-new">  
-        {#if number > 1}
-          <div style="margin-top: 1rem;">
-            <button
-              disabled={currentIndex <= 0}
-              onclick={prevCard}
-            >
-              &larr; Edellinen
-            </button>
-            <button
-              disabled={currentIndex >= $cards.length - 1}
-              onclick={nextCard}
-            >
-              Seuraava &rarr;
-            </button>
-          </div>
-
-     {#if number > 1}
-        <div class="keyboard-hint">
-          💡 Käytä nuolinäppäimiä (← →) navigoidaksesi korttien välillä
-          <br>
+            <div class="keyboard-hint">
+              💡 Käytä nuolinäppäimiä (← →) navigoidaksesi korttien välillä
+              <br>
+            </div>
+          {/if}
         </div>
       {/if}
-
-        {/if}
-   </div>
-      {/if}
-
-    
     </div>
   </section>
 </div>

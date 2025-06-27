@@ -8,7 +8,7 @@
   // import { cards } from "./stores.js";
   import Flashcards from "./flashcards.svelte";
 	import Matematiikka from "./matematiikka.svelte";
-  import { cards } from "./stores.js";
+  // import { cards } from "./stores.js";
   import Linechart from "./linechart.svelte";
   import Editor from "./editor.svelte";
   import Fysiikka from "./fysiikka.svelte";
@@ -16,6 +16,7 @@
   import Arcchartto from "./arcchartto.svelte";
   import { motivationval } from "./stores.js";
 
+  import Todo from "./todo.svelte";
 
   import { onMount } from 'svelte';
 
@@ -41,7 +42,7 @@
 
 
 
-  let cardsTextIdentification = "Kemian Muistikortit";
+ 
 
   let todoText = "";
 
@@ -92,11 +93,11 @@
 
 <div id="charts-container">
 
-<Arcchart usecase={"Kemian Muistikortit"} />
+<Arcchart usecase={"Kemian Muistikortit"} subject="Kemia"/>
 
 
 
-<Arcchartto usecase={"Kemian Tehtävien määrä"} />
+<Arcchartto usecase={"Kemian Tehtävien määrä"} subject="kemia" />
 
 <!-- <button on:click={saveAllData}>Save</button> -->
 
@@ -115,8 +116,8 @@
 <div class="usecase-container">
 <div class="container">  
  
-<Flashcards useCaseCards={cardsTextIdentification} />
-
+<Flashcards  subject="Kemia"/>
+<!-- 
 
 <div id="to-do">
 <section class="content-block">
@@ -169,7 +170,9 @@
 
 
 </section>
-</div>
+</div> -->
+
+<Todo subject="kemia" />
 
 <WorkingEditorVersion />
 
@@ -177,46 +180,7 @@
 </div>
 
 <style>
-  
-  .content-block {
-    background-color: #ffffffcc;
-    padding: 1.5rem 2rem;
-    border-radius: 12px;
-    max-width: 500px;
-    height: 600px;
-    margin: 0 auto;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 20px;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 2.8rem;
-    color: #003366;
-    text-align: center;
-  }
-
-
-  input {
-    width: 300px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-
-
-
-  .live-preview-hint {
-    font-size: 0.8rem;
-    color: #666;
-    margin-top: 8px;
-    font-style: italic;
-  }
-
+ 
 
   .container {
     display: grid;
@@ -237,40 +201,6 @@
     
   } */
 
-
-
-  button {
-    padding: 8px 16px;
-    margin: 4px;
-    border: none;
-    border-radius: 4px;
-    background-color: #0277bd;
-    color: white;
-    cursor: pointer;
-    font-size: 1rem;
-  }
-
-  button:hover:not(:disabled) {
-    background-color: #0288d1;
-  }
-
-  button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-
-  /* #add {
-    background-color: #1873d4;
-  } */
-
-
-
-
-  .rowButtons {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
 
 
   #charts-container {
@@ -296,27 +226,4 @@
     margin-right: 20px;
   }
 
-.results {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 350px;
-  width: 65%;
-  border: rgb(0, 0, 0) 1px solid;
-  border-radius: 8px;
-  padding: 10px;
-  margin: 10px;
-  box-shadow: 2px 1px 2px rgb(123, 121, 121);
-}
-
-.element {
-background: none;
-	color: inherit;
-	border: none;
-	padding: 0;
-	font: inherit;
-	cursor: pointer;
-	outline: inherit;
-}
 </style>

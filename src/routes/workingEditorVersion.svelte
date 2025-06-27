@@ -16,6 +16,8 @@
    let isEditorAndToolbarReady = $state(false); // Flag for rendering toolbar/editor itself
    let currentFilePath: string | undefined = $state(undefined); // For file operations UI
 
+
+   
    // --- Editor Instance Ready Effect ---
    // This effect reacts to the 'editor' instance becoming available after EdraEditor mounts.
    $effect(() => {

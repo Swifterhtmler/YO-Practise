@@ -2,7 +2,11 @@
   import { Chart, Svg, Arc } from 'layerchart';
   import { cards } from './stores'; 
 
-  $: value = $cards.length;
+  export let subject = "";
+
+  $: subjectCards = $cards[subject] ?? [];
+  $: value = subjectCards.length;
+
   let domain = [0,500]
 
  export let usecase = "Muistikorttien määrä" 

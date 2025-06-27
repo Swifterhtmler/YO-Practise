@@ -15,10 +15,27 @@
 import { writable, get } from "svelte/store"
 
 // Create the stores
-export const todoItems = writable([])
-export const cards = writable([])
+export const todoItems = writable({
+  Kemia: [],
+  matematiikka: [],
+})
+
+// export const cards = writable([])
+export const cards = writable({
+  kemia: [],
+  matematiikka: [],
+})
+
+
 export const motivationval = writable([0, 0])
-export const editorTextStore = writable("")
+// export const editorTextStore = writable("")
+
+export const editorTextStore = writable({
+  kemia: "",
+  matematiikka: "",
+  // etc.
+});
+
 export const editorDivStore = writable(null)
 
 let initialized = false

@@ -2,7 +2,13 @@
   import { Chart, Svg, Arc } from 'layerchart';
   import { todoItems } from './stores';
 
- $: value = $todoItems.length;
+
+  export let subject = "";
+  
+
+  $: subjectTodos = $todoItems[subject] ?? [];
+  $: value = subjectTodos.length
+
   let domain = [0,10]
 
  export let usecase = "Määrä" 
