@@ -4,10 +4,12 @@
 declare global {
     interface Window {
         electronAPI: {
-            saveFile: (contentData: import("@tiptap/core").Content) => Promise<{ success: boolean; filePath?: string; message?: string }>;
-            openFile: () => Promise<{ success: boolean; content?: import("@tiptap/core").Content; filePath?: string; message?: string }>;
+            saveFile: (contentData: any) => Promise<any>;
+            openFile: () => Promise<any>;
+            loadFile: () => Promise<any>;
         };
     }
 }
+export {};
 // You might also need to add /// <reference types="svelte" /> if this is your primary d.ts
 // or ensure tsconfig.json includes "types": ["svelte", "...other types if any"]

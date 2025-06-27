@@ -117,18 +117,19 @@
    }
 </script>
 
+
 <div class="flex justify-center items-start mt-0">
-  <div class="bg-white shadow-lg rounded-xl border border-gray-200" style="width:500px;height:600px;display:flex;flex-direction:column;margin-top:20px;">
+  <div class="bg-white shadow-lg rounded-xl border border-gray-200" style="width:500px;height:600px;display:flex;flex-direction:column;margin-top:20px">
 
     <div class="flex p-2 gap-2 border-b flex-wrap">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm" onclick={saveContentToFile}>
+        <!-- <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm" onclick={saveContentToFile}>
             Save to File
-        </button>
+        </button> -->
         <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm" onclick={openContentFromFile}>
-            Open File
+            Avaa tiedosto
         </button>
         <button class="bg-purple-500 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded text-sm" onclick={loadContentFromStoreIntoEditor}>
-            Paste from Store
+            Palauta editori
         </button>
         {#if currentFilePath}
             <span class="text-sm text-gray-600 truncate flex-1 mt-1 sm:mt-0">Current: {currentFilePath.split('/').pop()}</span>
@@ -150,7 +151,7 @@
           {onUpdate}
       />
       {#if !isEditorAndToolbarReady}
-        <div class="flex-1 flex justify-center items-center">Loading editor...</div>
+        <div class="flex-1 flex justify-center items-center">Editori lataa...</div>
       {/if}
     </div>
   </div>

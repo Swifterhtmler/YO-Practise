@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -20,6 +20,23 @@ ipcMain.handle('load-file', async () => {
     return JSON.parse(content);
   } else {
     return [];
+  }
+});
+
+ipcMain.handle('open-file', async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'JSON', extensions: ['json'] }]
+  });
+  if (canceled || !filePaths.length) {
+    return { success: false, message: 'No file selected' };
+  }
+  const filePath = filePaths[0];
+  try {
+    const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    return { success: true, content, filePath };
+  } catch (err) {
+    return { success: false, message: err.message };
   }
 });
 
