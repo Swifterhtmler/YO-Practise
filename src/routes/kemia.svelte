@@ -1,6 +1,9 @@
 <script>
   import { writable } from "svelte/store";
   import { todoItems } from './stores.js';
+
+
+
   // import { cards } from "./stores.js"; 
   // import { cards } from "./stores.js";
   import Flashcards from "./flashcards.svelte";
@@ -12,7 +15,7 @@
   import Arcchart from "./arcchart.svelte";
   import Arcchartto from "./arcchartto.svelte";
   import { motivationval } from "./stores.js";
-  
+
 
   import { onMount } from 'svelte';
 
@@ -24,6 +27,9 @@
 
   import SvelteCalenderDisplay from "./svelteCalenderDisplay.svelte";
 
+
+  import WorkingEditorVersion from "./workingEditorVersion.svelte";
+
  import { get } from "svelte/store";
 
 //  import { initializeStores } from './stores.js';
@@ -31,6 +37,7 @@
 
   let editorDiv;
 
+  let kemiaCards = writable([]);
 
 
 
@@ -116,7 +123,7 @@
 <h2>Tehtävälista</h2>
 {#if $todoItems.length == 0}
 <div class="results">
-<div class="live-preview-hint">(Lisää tehtäviä listalle esim. luettavat luvut) <Editor />
+<div class="live-preview-hint">(Lisää tehtäviä listalle esim. luettavat luvut)
 </div>
 </div>
 {:else}
@@ -164,6 +171,7 @@
 </section>
 </div>
 
+<WorkingEditorVersion />
 
 </div>
 </div>

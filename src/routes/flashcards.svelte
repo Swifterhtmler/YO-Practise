@@ -11,6 +11,7 @@
   let showNavigation = false; // New state to control navigation visibility
 
 
+
   export let useCaseCards = "Yleiset muistikortit";
 
   $: number = $cards.length;
