@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
 	import { onMount } from 'svelte';
 
 	let expression = 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}';
@@ -22,4 +22,21 @@
 		font-size: 1.4em;
 		margin: 1rem 0;
 	}
-</style>
+</style> -->
+
+<script lang="ts">
+  import type { Content, Editor } from '@tiptap/core';
+  import { EdraEditor, EdraToolBar, EdraBubbleMenu } from '../lib/components/edra/headless';
+  import WorkingEditorVersion from './workingEditorVersion.svelte';
+
+  let content: Content | undefined = undefined;
+  let editor: Editor | undefined = undefined;
+
+  function onUpdate() {
+    content = editor?.getJSON();
+  }
+</script>
+
+<!-- <EdraEditor /> -->
+<WorkingEditorVersion />
+

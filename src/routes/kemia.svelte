@@ -116,7 +116,8 @@
 <h2>Tehtävälista</h2>
 {#if $todoItems.length == 0}
 <div class="results">
-<div class="live-preview-hint">(Lisää tehtäviä listalle esim. luettavat luvut) </div>
+<div class="live-preview-hint">(Lisää tehtäviä listalle esim. luettavat luvut) <Editor />
+</div>
 </div>
 {:else}
 <div class="results">
@@ -163,7 +164,6 @@
 </section>
 </div>
 
-<Editor />
 
 </div>
 </div>

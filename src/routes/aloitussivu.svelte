@@ -27,6 +27,8 @@
   import SvelteCalenderDisplay from "./svelteCalenderDisplay.svelte";
 
 
+  import WorkingEditorVersion from "./workingEditorVersion.svelte";
+
 
   let editorDiv;
 
@@ -161,7 +163,10 @@
 </section>
 </div>
 
-<Editor />
+
+<!-- <Editor /> -->
+<WorkingEditorVersion />
+
 
 </div>
 </div>
