@@ -8,13 +8,17 @@ import 'dotenv/config';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const configPath = path.join(__dirname, '../config.json');
+const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+
+
 const dataPath = path.join(app.getPath('userData'), 'saved.json');
 
 
 
 const api = new OpenAI({
   baseURL: 'https://api.aimlapi.com/v1',
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: config.OPENAI_API_KEY,
 });
 
 // Handle chat requests from renderer

@@ -1,179 +1,73 @@
+<script lang="ts">
+  import { cards } from "./stores.js"; // Re-introducing the store import
 
-<script>
-  import { cards } from "./stores.js";
-  export let subject = "kemia"; // Pass this from parent, e.g. <Flashcards subject="kemia" />
+  export let subject = "kemia"; // Passed from parent, e.g., <Flashcards subject="kemia" />
 
-  // Use derived value for this subject's cards
+  // Use the derived value from the 'cards' store for this subject
   $: subjectCards = $cards[subject] ?? [];
 
-  let cardText = "";
-  let cardTextBack = "";
-  let currentIndex = -1;
-  let isFlipped = false;
-  let isEditing = false;
-  let showNavigation = false;
+  let cardText = ""; // Binds to the front input field
+  let cardTextBack = ""; // Binds to the back input field
+  let isFlipped = false; // Controls card flip animation
 
+  // Reactive declaration for number of cards (now derived from the store)
   $: number = subjectCards.length;
-
-  function changeEditing() {
-    isEditing = true;
-  }
 
   function flipCard() {
     isFlipped = !isFlipped;
   }
 
-  function addCard(event) {
-    if (event) event.preventDefault();
-    if (cardText.trim() === "" || cardTextBack.trim() === "") return;
-    cards.update(all => {
-      const updated = { ...all };
+  // --- REVISED ADD CARD LOGIC TO USE THE SVELTE STORE ---
+  function addCard(event: Event) {
+    if (event) event.preventDefault(); // Prevent form submission
+    if (cardText.trim() === "" || cardTextBack.trim() === "") return; // Don't add empty cards
+
+    // Update the 'cards' store using its update method
+    cards.update(allSubjectsCards => {
+      const updated = { ...allSubjectsCards }; // Create a shallow copy of the entire cards object
+      // Add the new card to the specific subject's array
       updated[subject] = [...(updated[subject] ?? []), { front: cardText, back: cardTextBack }];
-      return updated;
+      return updated; // Return the updated object to the store
     });
+
+    // After adding, clear inputs and reset flip state
     cardText = "";
     cardTextBack = "";
-    currentIndex = subjectCards.length; // will be updated on next tick
-    isFlipped = false;
-    isEditing = false;
-    showNavigation = false;
+    isFlipped = false; // Reset flip for next new card
+
+    console.log(`Card Added to ${subject}! Current cards for ${subject}:`, $cards[subject]);
   }
 
-  function removeCard() {
-    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
-      cards.update(all => {
-        const updated = { ...all };
-        updated[subject] = updated[subject].slice();
-        updated[subject].splice(currentIndex, 1);
+  // --- NEW: Function to remove the last card ---
+  function removeLastCard() {
+    if (subjectCards.length > 0) {
+      cards.update(allSubjectsCards => {
+        const updated = { ...allSubjectsCards };
+        // Create a new array that excludes the last element
+        updated[subject] = updated[subject].slice(0, -1);
         return updated;
       });
-      if (currentIndex >= subjectCards.length - 1) {
-        currentIndex = subjectCards.length - 2;
-      }
-      isFlipped = false;
-      isEditing = false;
-      cardText = "";
-      cardTextBack = "";
-      showNavigation = false;
+      isFlipped = false; // Reset flip state after removal
+      console.log(`Last card removed from ${subject}! Current cards for ${subject}:`, $cards[subject]);
     }
   }
 
-  function nextCard() {
-    if (currentIndex < subjectCards.length - 1) {
-      currentIndex++;
-      isEditing = false;
-      isFlipped = false;
-      cardText = "";
-      cardTextBack = "";
-      showNavigation = false;
-    }
-  }
-
-  function prevCard() {
-    if (currentIndex > 0) {
-      currentIndex--;
-      isEditing = false;
-      isFlipped = false;
-      cardText = "";
-      cardTextBack = "";
-      showNavigation = false;
-    }
-  }
-
-  function toggleNavigation() {
-    showNavigation = !showNavigation;
-  }
-
-  function newCardAdd(event) {
+  // Input-related keydown handlers (kept as is)
+  function handleFrontInputKeydown(event: KeyboardEvent) {
     if (event.key === "Enter") {
       event.preventDefault();
-      addCard(event);
-      startAddingNew();
+      isFlipped = true; // Automatically flip to back on Enter
+      // (Focus management for input fields would go here if bind:this were used)
     }
   }
 
-  function handleKeydown(event) {
-    if (event.key === "ArrowRight") {
-      nextCard();
-    } else if (event.key === "ArrowLeft") {
-      prevCard();
-    }
-  }
-
-  function getCardContent() {
-    if (subjectCards.length === 0 || (currentIndex === -1 && !isEditing)) {
-      return isFlipped
-        ? (cardTextBack || "Lisää teksti kortin takapuolelle")
-        : (cardText || "Kirjoita jotain ja lisätäksesi kortin");
-    }
-    if (isEditing && currentIndex >= 0 && currentIndex < subjectCards.length) {
-      return isFlipped
-        ? (cardTextBack || subjectCards[currentIndex].back)
-        : (cardText || subjectCards[currentIndex].front);
-    }
-    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
-      return isFlipped
-        ? subjectCards[currentIndex].back
-        : subjectCards[currentIndex].front;
-    }
-    return "Ei kortteja";
-  }
-
-  function handleKeypress(event) {
+  function handleBackInputKeydown(event: KeyboardEvent) {
     if (event.key === "Enter") {
       event.preventDefault();
-      if (!isFlipped) {
-        isFlipped = true;
-      } else {
-        addCard(event);
-      }
+      addCard(event); // Call addCard directly
     }
-  }
-
-  function handleKeypressFirstVersion(event) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      isFlipped = true;
-    }
-  }
-
-  function startEditing() {
-    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
-      isEditing = true;
-      cardText = subjectCards[currentIndex].front;
-      cardTextBack = subjectCards[currentIndex].back;
-      isFlipped = false;
-      showNavigation = false;
-    }
-  }
-
-  function updateCard() {
-    if (currentIndex >= 0 && currentIndex < subjectCards.length) {
-      cards.update(all => {
-        const updated = { ...all };
-        updated[subject] = updated[subject].slice();
-        updated[subject][currentIndex] = { front: cardText, back: cardTextBack };
-        return updated;
-      });
-      isEditing = false;
-      cardText = "";
-      cardTextBack = "";
-      isFlipped = false;
-      showNavigation = false;
-    }
-  }
-
-  function startAddingNew() {
-    currentIndex = -1;
-    isEditing = false;
-    isFlipped = false;
-    cardText = "";
-    cardTextBack = "";
-    showNavigation = false;
   }
 </script>
-
-<svelte:window on:keydown={handleKeydown} />
 
 <div class="container">
   <section class="content-block">
@@ -182,120 +76,76 @@
     <br>
 
     <div id="card-Block" role="region">
-      <div 
-        class="card" 
-        class:flipped={isFlipped} 
+      <div
+        class="card"
+        class:flipped={isFlipped}
         onclick={flipCard}
         onkeydown={(e) => e.key === 'Enter' && flipCard()}
         role="button"
         tabindex="0"
       >
         <div class="card-front">
-          {getCardContent()}
+          {cardText || "Kirjoita etupuolen teksti tähän..."}
         </div>
         <div class="card-back">
-          {getCardContent()}
+          {cardTextBack || "Kirjoita takapuolen teksti tähän..."}
         </div>
       </div>
 
       <br>
       <h5>
         Muistikorttien lukumäärä: {number}
-        {#if number > 0 && currentIndex >= 0}
-          <span class="card-position">Nykyinen kortti: (Kortti {currentIndex + 1} / {number})</span>
-        {/if}
       </h5>
 
       <br>
 
-      {#if currentIndex === -1 || isEditing}
-        <input
-          bind:value={cardText}
-          type="text"
-          placeholder="Kirjoita etupuolen teksti"
-          onkeypress={handleKeypressFirstVersion}
-        >
+      <input
+        bind:value={cardText}
+        type="text"
+        placeholder="Kirjoita etupuolen teksti"
+        onkeydown={handleFrontInputKeydown}
+      >
 
-        <br>
+      <br>
 
-        <input
-          bind:value={cardTextBack}
-          type="text"
-          placeholder="Kirjoita takapuolen teksti"
-          onkeypress={newCardAdd}
-        >
-        
-        <br>
+      <input
+        bind:value={cardTextBack}
+        type="text"
+        placeholder="Kirjoita takapuolen teksti"
+        onkeydown={handleBackInputKeydown}
+      >
 
-        <div class="input-controls">
-          {#if !isEditing}
-            <button disabled={cardText.trim() === "" && cardTextBack.trim() === ""} onclick={addCard}>
-              Lisää kortti
-            </button>
-          {:else}
-            <button onclick={updateCard} disabled={cardText.trim() === "" && cardTextBack.trim() === ""}>
-              Päivitä kortti
-            </button>
-          {/if}
+      <br>
 
-          {#if number > 0}
-            <button onclick={toggleNavigation}>
-              {showNavigation ? 'Piilota valikko' : 'Näytä valikko'}
-            </button>
-          {/if}
-        </div>
+      <div class="input-controls">
+        <button disabled={cardText.trim() === "" || cardTextBack.trim() === ""} onclick={addCard}>
+          Lisää kortti
+        </button>
+        <button disabled={number === 0} onclick={removeLastCard}>
+          Poista viimeisin kortti
+        </button>
+      </div>
+
+      {#if number === 0}
+        <p style="margin-top: 20px; text-align: center; color: #555;">
+          Aloita lisäämällä uusi kortti yllä olevilla kentillä.
+        </p>
       {/if}
 
-      {#if showNavigation || (currentIndex >= 0 && !isEditing && !(currentIndex === -1 || isEditing))}
-        <div class="card-controls">
-          <button onclick={flipCard}>Käännä kortti</button>
+      <hr style="width: 100%; margin-top: 20px;">
+      <p>Debug: Kortit lisätty ({subject}): ({number} kpl)</p>
+      <ul>
+        {#each subjectCards as card, i (i)}
+          <li>{i + 1}. Etu: "{card.front}" / Taka: "{card.back}"</li>
+        {/each}
+      </ul>
 
-          {#if number > 0}
-            {#if currentIndex >= 0 && !isEditing}
-              <button onclick={startEditing}>Muokkaa korttia</button>
-            {/if}
-
-            {#if !isEditing}
-              <button onclick={startAddingNew}>Lisää uusi kortti</button>
-            {/if}
-
-            {#if number <= 0}
-              <button disabled onclick={removeCard}>Poista kortti</button>
-            {:else if currentIndex >= 0}
-              <button onclick={removeCard}>Poista kortti</button>
-            {/if}
-          {/if}
-        </div>
-
-        <div class="card-controls-version-new">  
-          {#if number > 1}
-            <div style="margin-top: 1rem;">
-              <button
-                disabled={currentIndex <= 0}
-                onclick={prevCard}
-              >
-                &larr; Edellinen
-              </button>
-              <button
-                disabled={currentIndex >= subjectCards.length - 1}
-                onclick={nextCard}
-              >
-                Seuraava &rarr;
-              </button>
-            </div>
-
-            <div class="keyboard-hint">
-              💡 Käytä nuolinäppäimiä (← →) navigoidaksesi korttien välillä
-              <br>
-            </div>
-          {/if}
-        </div>
-      {/if}
     </div>
   </section>
 </div>
 
 <style>
+  /* All your existing styles are kept intact */
   .content-block {
     background-color: #ffffffcc;
     padding: 1.5rem 2rem;
