@@ -31,6 +31,10 @@
 
   import WorkingEditorVersion from "./workingEditorVersion.svelte";
 
+
+  import Artificialintelligence from "./artificialintelligence.svelte";
+
+
  import { get } from "svelte/store";
 
 //  import { initializeStores } from './stores.js';
@@ -104,6 +108,7 @@
 
 <!-- <SvelteCalenderDisplay /> -->
 
+<Artificialintelligence />
 
 </div>
 
