@@ -8,3 +8,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadFile: () => ipcRenderer.invoke('load-file'),
   openFile: () => ipcRenderer.invoke('open-file'),
 });
+
+contextBridge.exposeInMainWorld('openaiAPI', {
+  chat: async (messages) => ipcRenderer.invoke('openai-chat', { messages })
+});

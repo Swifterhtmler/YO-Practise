@@ -1,3 +1,7 @@
+<script>
+  import Fysiikka from "./fysiikka.svelte";
+</script>
+<!-- 
 <p>Äidinkieli sivu</p>
 
 <button class="btn">
@@ -6,9 +10,11 @@
     </svg>
 
     <span class="text">Generate</span>
-</button>
+</button> -->
 
 
+<Fysiikka />
+<!-- 
 <style>
     .btn {
   border: none;
@@ -52,4 +58,4 @@
   fill: white;
   transform: scale(1.2);
 } 
-</style>
+</style> -->

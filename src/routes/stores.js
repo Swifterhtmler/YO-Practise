@@ -33,7 +33,7 @@ export const motivationval = writable([0, 0])
 export const editorTextStore = writable({
   kemia: "",
   matematiikka: "",
-  // etc.
+  // lisää esimerkkejä
 });
 
 export const editorDivStore = writable(null)

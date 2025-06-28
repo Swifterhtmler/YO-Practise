@@ -1,12 +1,39 @@
 import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { OpenAI } from 'openai';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const dataPath = path.join(app.getPath('userData'), 'saved.json');
+
+
+
+const api = new OpenAI({
+  baseURL: 'https://api.aimlapi.com/v1',
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+// Handle chat requests from renderer
+ipcMain.handle('openai-chat', async (event, { messages }) => {
+  try {
+    const result = await api.chat.completions.create({
+      model: 'google/gemma-3n-e4b-it',
+      messages, // Must be an array of {role, content}
+      // Only add more params if AIMLAPI docs say they're supported!
+    });
+    return result.choices[0].message.content;
+  } catch (err) {
+    console.error("OpenAI API error:", err);
+    throw new Error(err.message || "Unknown error");
+  }
+});
+
+
+
 
 ipcMain.on('save-file', (event, data) => {
   console.log('Saving to:', dataPath); // ADD THIS
