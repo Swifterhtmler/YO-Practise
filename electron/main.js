@@ -71,6 +71,8 @@ ipcMain.handle('open-file', async () => {
   }
 });
 
+
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1820,
@@ -85,4 +87,3 @@ const createWindow = () => {
 };
 
 app.whenReady().then(createWindow);
-

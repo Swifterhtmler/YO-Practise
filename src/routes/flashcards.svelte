@@ -133,12 +133,12 @@
       {/if}
 
       <hr style="width: 100%; margin-top: 20px;">
-      <p>Debug: Kortit lisätty ({subject}): ({number} kpl)</p>
-      <ul>
+      <p>Kortit lisätty ({subject}): ({number} kpl)</p>
+      <!-- <ul>
         {#each subjectCards as card, i (i)}
           <li>{i + 1}. Etu: "{card.front}" / Taka: "{card.back}"</li>
         {/each}
-      </ul>
+      </ul> -->
 
     </div>
   </section>
@@ -196,18 +196,6 @@
     transform: rotateY(180deg);
   }
 
-.card-controls-version-new {
-    display: flex;
-    gap: 2px;
-    margin: 2px 0;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    background-color: rgb(247, 247, 247);
-    border-radius: 5px;
-    padding-bottom: 10px;
-}
-
   .card-front,
   .card-back {
     position: absolute;
@@ -226,19 +214,6 @@
 
   .card-back {
     transform: rotateY(180deg);
-  }
-
-  .card-position {
-    font-size: 0.9rem;
-    color: #666;
-    margin-left: 10px;
-  }
-
-  .keyboard-hint {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #666;
-    text-align: center;
   }
 
   .container {
@@ -270,18 +245,6 @@
   button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
-  }
-
-  .card-controls {
-    display: flex;
-    gap: 2px;
-    margin: 2px 0;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    padding: 11px;
-    background-color: rgb(247, 247, 247);
-    border-radius: 5px;
   }
 
   .input-controls {
