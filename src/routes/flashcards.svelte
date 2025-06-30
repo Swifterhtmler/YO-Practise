@@ -1,7 +1,27 @@
 <script lang="ts">
   import { cards } from "./stores.js"; // Re-introducing the store import
 
-  export let subject = "kemia"; // Passed from parent, e.g., <Flashcards subject="kemia" />
+  export let subject = ""; // Passed from parent, e.g., <Flashcards subject="kemia" />
+
+    let showPopUp = false;
+
+
+     function closePopup() {
+    showPopUp = false;
+  }
+
+
+
+
+
+
+
+  
+
+
+
+
+
 
   // Use the derived value from the 'cards' store for this subject
   $: subjectCards = $cards[subject] ?? [];
@@ -16,6 +36,8 @@
   function flipCard() {
     isFlipped = !isFlipped;
   }
+
+
 
   // --- REVISED ADD CARD LOGIC TO USE THE SVELTE STORE ---
   function addCard(event: Event) {
@@ -37,6 +59,25 @@
 
     console.log(`Card Added to ${subject}! Current cards for ${subject}:`, $cards[subject]);
   }
+
+
+
+
+    function previewCard() {
+       showPopUp = true;
+    }
+
+     function closePreviewWindow() {
+      showPopUp = false;
+    }
+
+  function escapeEvent(event: KeyboardEvent) {  
+    if (event.key === "Escape") {
+      closePreviewWindow();
+    }
+
+  }
+
 
   // --- NEW: Function to remove the last card ---
   function removeLastCard() {
@@ -114,7 +155,6 @@
         placeholder="Kirjoita takapuolen teksti"
         onkeydown={handleBackInputKeydown}
       >
-
       <br>
 
       <div class="input-controls">
@@ -123,6 +163,9 @@
         </button>
         <button disabled={number === 0} onclick={removeLastCard}>
           Poista viimeisin kortti
+        </button>
+        <button onclick={previewCard}>
+         Katsele lisättyjä Kortteja
         </button>
       </div>
 
@@ -142,6 +185,31 @@
 
     </div>
   </section>
+
+{#if showPopUp}
+  <div class="popup-overlay">
+    <div id="overlayPopUpPreview"> <div class="topBarPreviewWindow">
+         <h5>Muistikortit</h5>
+         <button onclick={closePopup}>X</button>
+      </div>
+
+      <div class="popup-scrollable-content">
+        {#if subjectCards.length === 0}
+          <p>Ei kortteja vielä.</p>
+        {:else}
+          <ul>
+            {#each subjectCards as card, i (i)}
+              <li>{i + 1}. Etu: "{card.front}" / Taka: "{card.back}"</li>
+            {/each}
+          </ul>
+        {/if}
+      </div>
+      </div>
+  </div>
+{/if}
+
+
+
 </div>
 
 <style>
@@ -254,4 +322,73 @@
     flex-wrap: wrap;
     justify-content: center;
   }
+
+
+
+
+  #overlayPopUpPreview {
+    width: 1200px;
+    height: 700px;
+    background-color: #ffffffcc;
+    border-radius: 10px;
+    border: 2px solid black;
+  position: fixed;
+  top: 50%;      
+  left: 50%;     
+  transform: translate(-50%, -50%); 
+  z-index: 1000;   /* Ensures it appears on top of other content */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8); 
+  
+  }
+
+  .topBarPreviewWindow {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .topBarPreviewWindow button {
+    margin-left: auto;
+  }
+
+  .topBarPreviewWindow h5 {
+     flex-grow: 1;            
+    text-align: center;      
+    margin: 0;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 1.8rem;
+    color: #003366;   
+    margin-left: 20px;
+  }
+
+
+
+
+
+  .popup-scrollable-content {
+  flex-grow: 1; /* Allows it to take all available vertical space */
+  overflow-y: auto; /* Enables vertical scrolling if content overflows */
+  padding: 10px; /* Some padding around the list */
+  /* If you want the text centered in the list, you might add: */
+  /* text-align: center; */
+}
+
+.popup-scrollable-content ul {
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+  margin: 0;
+}
+
+.popup-scrollable-content li {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  text-align: left; /* Ensure text aligns left within list item */
+}
+
+
+
 </style>
