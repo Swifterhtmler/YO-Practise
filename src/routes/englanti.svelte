@@ -28,7 +28,7 @@
   import type { Content, Editor } from '@tiptap/core';
   import { EdraEditor, EdraToolBar, EdraBubbleMenu } from '../lib/components/edra/headless';
   import WorkingEditorVersion from './workingEditorVersion.svelte';
-
+  import ContentManager from './contentManager.svelte';
   let content: Content | undefined = undefined;
   let editor: Editor | undefined = undefined;
 
@@ -38,5 +38,5 @@
 </script>
 
 <!-- <EdraEditor /> -->
-<WorkingEditorVersion />
-
+<!-- <WorkingEditorVersion /> -->
+<ContentManager />

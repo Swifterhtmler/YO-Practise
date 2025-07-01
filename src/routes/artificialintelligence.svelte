@@ -218,7 +218,7 @@ Answer in Finnish, or in the language the user uses in their question. Do not su
     overflow: hidden;
     font-family: sans-serif; /* A neutral font */
     /* REMOVE position: fixed, left, transform, margin-top here */
-    z-index: 1000; /* Still good to keep this if it overlays other things */
+    z-index: 998; /* Still good to keep this if it overlays other things */
    border: black 1px solid;
 }
 

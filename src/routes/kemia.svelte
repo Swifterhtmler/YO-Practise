@@ -4,6 +4,9 @@
 
 
 
+
+
+
   // import { cards } from "./stores.js"; 
   // import { cards } from "./stores.js";
   import Flashcards from "./flashcards.svelte";
@@ -15,6 +18,8 @@
   import Arcchart from "./arcchart.svelte";
   import Arcchartto from "./arcchartto.svelte";
   import { motivationval } from "./stores.js";
+
+
 
   import Todo from "./todo.svelte";
 
@@ -33,6 +38,9 @@
 
 
   import Artificialintelligence from "./artificialintelligence.svelte";
+
+
+  import ContentManager from "./contentManager.svelte";
 
 
  import { get } from "svelte/store";
@@ -121,7 +129,10 @@
 <div class="usecase-container">
 <div class="container">  
  
-<Flashcards  subject="Kemia"/>
+<!-- <Flashcards  subject="Kemia"/> -->
+
+<ContentManager />
+
 <!-- 
 
 <div id="to-do">

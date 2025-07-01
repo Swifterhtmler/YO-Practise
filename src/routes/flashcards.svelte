@@ -3,41 +3,100 @@
 
   export let subject = ""; // Passed from parent, e.g., <Flashcards subject="kemia" />
 
-    let showPopUp = false;
+  let showPopUp = false;
 
+  // --- NEW/ADJUSTED: Variables for popup state ---
+  let currentCardIndex = 0; // To track which card is being viewed inside the popup
+  let popupCardFlipped = false; // Separate flip state for the card inside the popup
 
-     function closePopup() {
-    showPopUp = false;
+  // --- NEW: Functions for popup card navigation and flip ---
+  function togglePopupCardFlip() {
+    popupCardFlipped = !popupCardFlipped;
   }
 
 
 
 
 
+    function removeCurrentCard() {
+    if (subjectCards.length === 0) return; // No cards to remove
+
+    cards.update(allSubjectsCards => {
+      const updated = { ...allSubjectsCards };
+      // Create a new array, excluding the card at currentCardIndex
+      updated[subject] = updated[subject].filter((_, index) => index !== currentCardIndex);
+      return updated;
+    });
+
+    // After removal, adjust currentCardIndex:
+    // If the last card was removed, move to the previous one
+    // If it was the only card, currentCardIndex will naturally be 0 for an empty array
+    if (currentCardIndex >= subjectCards.length - 1 && subjectCards.length > 1) {
+      currentCardIndex--;
+    } else if (subjectCards.length === 1) { // If it was the last card in the list
+      currentCardIndex = 0; // Reset to 0 as the list is now empty or about to be empty
+      // Optionally, close the popup if all cards are deleted
+      closePopup();
+    }
+    // No need to reset popupCardFlipped here, as the card itself is gone.
+    // The next card will load unflipped if the index changes.
+    console.log(`Card at index ${currentCardIndex} removed from ${subject}!`);
+  }
 
 
-  
 
+  function showNextCard() {
+    if (currentCardIndex < subjectCards.length - 1) {
+      currentCardIndex++;
+      popupCardFlipped = false; // Reset flip when moving to a new card
+    } else {
+      // Optional: Loop back to the first card if at the end
+      currentCardIndex = 0;
+      popupCardFlipped = false;
+    }
+  }
 
+  function showPreviousCard() {
+    if (currentCardIndex > 0) {
+      currentCardIndex--;
+      popupCardFlipped = false; // Reset flip when moving to a new card
+    } else {
+      // Optional: Loop to the last card if at the beginning
+      currentCardIndex = subjectCards.length - 1;
+      popupCardFlipped = false;
+    }
+  }
 
+  function previewCard() {
+    showPopUp = true;
+    currentCardIndex = 0; // Always start at the first card when opening the popup
+    popupCardFlipped = false; // Ensure it's unflipped
+    console.log("Opening popup. Current subject cards:", subjectCards);
+  }
 
+  function closePopup() { // Consolidated popup closing function
+    showPopUp = false;
+  }
 
+  function escapeEvent(event: KeyboardEvent) {  
+    if (event.key === "Escape") {
+      closePopup();
+    }
+  }
 
   // Use the derived value from the 'cards' store for this subject
   $: subjectCards = $cards[subject] ?? [];
 
   let cardText = ""; // Binds to the front input field
   let cardTextBack = ""; // Binds to the back input field
-  let isFlipped = false; // Controls card flip animation
+  let isFlipped = false; // Controls card flip animation for the main input card
 
   // Reactive declaration for number of cards (now derived from the store)
   $: number = subjectCards.length;
 
-  function flipCard() {
+  function flipCard() { // This is for the main input card
     isFlipped = !isFlipped;
   }
-
-
 
   // --- REVISED ADD CARD LOGIC TO USE THE SVELTE STORE ---
   function addCard(event: Event) {
@@ -60,25 +119,6 @@
     console.log(`Card Added to ${subject}! Current cards for ${subject}:`, $cards[subject]);
   }
 
-
-
-
-    function previewCard() {
-       showPopUp = true;
-    }
-
-     function closePreviewWindow() {
-      showPopUp = false;
-    }
-
-  function escapeEvent(event: KeyboardEvent) {  
-    if (event.key === "Escape") {
-      closePreviewWindow();
-    }
-
-  }
-
-
   // --- NEW: Function to remove the last card ---
   function removeLastCard() {
     if (subjectCards.length > 0) {
@@ -89,7 +129,13 @@
         return updated;
       });
       isFlipped = false; // Reset flip state after removal
-      console.log(`Last card removed from ${subject}! Current cards for ${subject}:`, $cards[subject]);
+      // --- IMPORTANT: Adjust currentCardIndex if the last card was removed ---
+      // If the current card was the last one, move index back if possible
+      if (currentCardIndex >= subjectCards.length - 1 && subjectCards.length > 1) {
+          currentCardIndex--;
+      } else if (subjectCards.length === 1) { // If it was the only card, reset to 0 (for empty array)
+          currentCardIndex = 0;
+      }
     }
   }
 
@@ -120,8 +166,12 @@
       <div
         class="card"
         class:flipped={isFlipped}
-        onclick={flipCard}
-        onkeydown={(e) => e.key === 'Enter' && flipCard()}
+        onclick={flipCard} onkeydown={(e) => { // Added full keyboard handler for accessibility
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            flipCard();
+          }
+        }}
         role="button"
         tabindex="0"
       >
@@ -175,40 +225,63 @@
         </p>
       {/if}
 
-      <hr style="width: 100%; margin-top: 20px;">
-      <p>Kortit lisätty ({subject}): ({number} kpl)</p>
-      <!-- <ul>
-        {#each subjectCards as card, i (i)}
-          <li>{i + 1}. Etu: "{card.front}" / Taka: "{card.back}"</li>
-        {/each}
-      </ul> -->
-
+      <!-- <hr style="width: 100%; margin-top: 20px;"> -->
+     
     </div>
   </section>
 
 {#if showPopUp}
-  <div class="popup-overlay">
-    <div id="overlayPopUpPreview"> <div class="topBarPreviewWindow">
-         <h5>Muistikortit</h5>
-         <button onclick={closePopup}>X</button>
+  <div class="popup-overlay" onkeydown={escapeEvent} tabindex="-1" role="dialog" aria-modal="true">
+    <div id="overlayPopUpPreview">
+      <div class="topBarPreviewWindow">
+         <h5>Muistikortit ({currentCardIndex + 1}/{subjectCards.length})</h5> <button onclick={closePopup}>X</button>
       </div>
 
-      <div class="popup-scrollable-content">
+      <div class="popup-body-single-card">
         {#if subjectCards.length === 0}
-          <p>Ei kortteja vielä.</p>
+          <p style="text-align: center; margin-top: 50px;">
+            Ei muistikortteja tälle aiheelle vielä. <br>
+            Lisää kortteja pääikkunasta!
+          </p>
         {:else}
-          <ul>
-            {#each subjectCards as card, i (i)}
-              <li>{i + 1}. Etu: "{card.front}" / Taka: "{card.back}"</li>
-            {/each}
-          </ul>
+          <div
+            class="card popup-display-card" class:flipped={popupCardFlipped}
+            onclick={togglePopupCardFlip}
+            onkeydown={(e) => { // Accessibility: keyboard flip
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                togglePopupCardFlip();
+              }
+            }}
+            role="button"
+            tabindex="0"
+          >
+            <div class="card-front">
+              {subjectCards[currentCardIndex].front}
+            </div>
+            <div class="card-back">
+              {subjectCards[currentCardIndex].back}
+            </div>
+          </div>
+
+          <div class="card-navigation-buttons">
+            <button onclick={showPreviousCard} disabled={subjectCards.length === 0 || currentCardIndex === 0}>
+              Edellinen
+            </button>
+
+            <button onclick={removeCurrentCard} disabled={subjectCards.length === 0} style="background-color: #d32f2f;">
+              Poista kortti
+            </button>
+
+            <button onclick={showNextCard} disabled={subjectCards.length === 0 || currentCardIndex === subjectCards.length - 1}>
+              Seuraava
+            </button>
+          </div>
         {/if}
       </div>
-      </div>
+    </div>
   </div>
 {/if}
-
-
 
 </div>
 
@@ -258,6 +331,7 @@
     transform-style: preserve-3d;
     cursor: pointer;
     margin: 0 auto;
+    transform-origin: center center;
   }
 
   .card.flipped {
@@ -323,72 +397,124 @@
     justify-content: center;
   }
 
+  /* --- Styles for the Dimming Overlay (Covers full screen) --- */
+  .popup-overlay {
+    position: fixed; /* Fixes it to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* This is your dimming effect */
+    display: flex; /* Use flexbox to center content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 999; /* Changed to 999 to be just under the popup (1000) */
+    backdrop-filter: blur(5px); /* Optional: Adds a blur effect */
+     perspective: 1200px;
+  }
 
-
-
+  /* --- Styles for the Actual Popup Content Box (OPAQUE) --- */
   #overlayPopUpPreview {
     width: 1200px;
     height: 700px;
-    background-color: #ffffffcc;
+    background-color: #ffffff; /* Make this OPAQUE white, as it's the content box */
     border-radius: 10px;
     border: 2px solid black;
-  position: fixed;
-  top: 50%;      
-  left: 50%;     
-  transform: translate(-50%, -50%); 
-  z-index: 1000;   /* Ensures it appears on top of other content */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8); 
-  
+    position: fixed; /* Keep fixed position for centering */
+    top: 50%;      
+    left: 50%;     
+    transform: translate(-50%, -50%); 
+    z-index: 1000;   /* Ensures it appears on top of the overlay */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Reduced opacity for shadow */
+
+    display: flex; /* Make it a flex container */
+    flex-direction: column; /* Stack children vertically (header, body) */
+    overflow: hidden; /* Hide overflow if content pushes outside */
+
   }
 
   .topBarPreviewWindow {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: center; 
     align-items: center;
+    width: 100%; /* Ensure it takes full width of its parent */
+    padding: 10px 15px; /* Add some padding for spacing */
+    background-color: #f0f0f0; /* Example background */
+    border-bottom: 1px solid #eee; /* Example separator */
   }
 
   .topBarPreviewWindow button {
-    margin-left: auto;
+    margin-left: auto; 
+    background: none; 
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #555;
+    padding: 5px 10px;
+    line-height: 1;
+  }
+  .topBarPreviewWindow button:hover {
+    color: #000;
   }
 
   .topBarPreviewWindow h5 {
-     flex-grow: 1;            
-    text-align: center;      
-    margin: 0;
+    flex-grow: 1; /* Allows h5 to grow and push the button */
+    text-align: center; /* Re-center the text within its expanded space */
+    margin: 0; /* Remove default margin */
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 1.8rem;
     color: #003366;   
-    margin-left: 20px;
+    /* Removed margin-left: 20px as flex-grow takes care of centering */
   }
 
+  /* --- NEW: Style for the popup's main content body (single card + buttons) --- */
+  .popup-body-single-card {
+    flex-grow: 1; /* This will make it take up all available vertical space */
+    overflow-y: auto; /* Enable scrolling for very tall card content if it doesn't fit */
+    padding: 15px; /* Padding inside the body */
+    
+    display: flex; /* Use flexbox to arrange card and buttons */
+    flex-direction: column; /* Stack card and buttons vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
+  }
 
+  /* --- NEW: Style for the card specifically in the popup --- */
+  /* This reuses your .card styles, but allows for size adjustment in the popup */
+  .card.popup-display-card { /* Target the card inside the popup specifically */
+    width: 680px; /* Same width as your main card, adjust if needed */
+    height: 320px; /* Same height as your main card, adjust if needed */
+    margin: 20px auto; /* Add vertical margin and center horizontally */
+  }
 
+  /* --- NEW: Style for navigation buttons --- */
+  .card-navigation-buttons {
+    display: flex;
+    justify-content: center; /* Center the buttons horizontally */
+    gap: 15px; /* Space between buttons */
+    margin-top: 20px; /* Space above the buttons */
+  }
 
+  .card-navigation-buttons button {
+    /* Inherit your general button styles, or define specific ones here */
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    background-color: #0277bd;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
 
-  .popup-scrollable-content {
-  flex-grow: 1; /* Allows it to take all available vertical space */
-  overflow-y: auto; /* Enables vertical scrolling if content overflows */
-  padding: 10px; /* Some padding around the list */
-  /* If you want the text centered in the list, you might add: */
-  /* text-align: center; */
-}
+  .card-navigation-buttons button:hover:not(:disabled) {
+    background-color: #0288d1;
+  }
 
-.popup-scrollable-content ul {
-  list-style: none; /* Remove bullet points */
-  padding: 0;
-  margin: 0;
-}
+  .card-navigation-buttons button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 
-.popup-scrollable-content li {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 8px;
-  margin-bottom: 5px;
-  border-radius: 5px;
-  text-align: left; /* Ensure text aligns left within list item */
-}
-
-
-
+  /* --- Removed old .popup-scrollable-content and its children, as replaced by single-card view --- */
 </style>
